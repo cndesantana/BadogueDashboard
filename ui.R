@@ -24,11 +24,11 @@ dashboardPage(
   dashboardBody(
     tabItems(
       tabItem("dashboard",
-        fluidRow(
-          valueBoxOutput("rate"),
-          valueBoxOutput("count"),
-          valueBoxOutput("users")
-        ),
+        #fluidRow(
+         # valueBoxOutput("rate"),
+         # valueBoxOutput("count"),
+         # valueBoxOutput("users")
+        #),
         fluidRow(
           #box(
           #  width = 4, status = "info", solidHeader = TRUE,
