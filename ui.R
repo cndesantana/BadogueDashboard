@@ -9,7 +9,7 @@ dashboardPage(
       #menuItem("Raw data", tabName = "rawdata"),
       textInput("urlpost", 
                 "URL do post", 
-                value = "https://www.facebook.com/ruicostaoficial/photos/a.343034462495371.1073741828.342905935841557/1158675754264567/?type=3"
+                value = ""
       ),
       # textInput("fbid", 
       #           "Escreva o ID da página do Facebook onde foi publicado esse post:", 
@@ -39,18 +39,30 @@ dashboardPage(
           box(
             width = 4, status = "info", solidHeader = TRUE,
             title = "Reações",
-            plotOutput("reactionsPlot", width="100%", height= 600)
+            plotOutput("reactionsPlot", width="100%", height= 600),
+            downloadButton("reactionsts","Download")
+            
           ),
           box(
-            width = 4, status = "info", solidHeader = TRUE,
-            title = "Comentários",
-            plotOutput("commentsPlot", width="100%", height= 600)
+             width = 4, status = "info", solidHeader = TRUE,
+             title = "Comentários",
+             plotOutput("commentsPlot", width="100%", height= 600),
+             downloadButton("comentariosts","Download")
           ),
           box(
-             width = 8, status = "info", solidHeader = TRUE,
+             width = 4, status = "info", solidHeader = TRUE,
+             title = "Sentimento",
+             plotOutput("sentimentPlot", width="100%", height= 600),
+             downloadButton("sentimentts","Download")
+          ),
+          box(
+             width = 4, status = "info", solidHeader = TRUE,
              title = "Wordcloud",
-             plotOutput("wordcloudPlot", width="100%", height= 600)
+             plotOutput("wordcloudPlot", width="100%", height= 600),
+             downloadButton("wordcloudts","Download")
+             
           )
+          
           #,
           #box(
           #  width = 4, status = "info",
