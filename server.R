@@ -55,68 +55,6 @@ function(input, output, session) {
     )
   })
 
-  output$sentimentPlot <- renderPlot({
-     invalidateLater(1*20*1000)
-     url <- input$urlpost
-     #     id_pagina <- input$fbid 
-     id_pagina <- getFBID(url)
-     data <- input$date
-     
-     # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")  
-     reactions_timeseries_filename <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/reactions_per_time.csv"
-          
-     data_inicio <- ymd(as.character(data)) + days(-2);
-     data_final <- ymd(as.character(data)) + days(2);
-     
-     mypage <- getPage(id_pagina, token = fb_oauth, feed=TRUE, since= as.character(data_inicio), until=as.character(data_final))
-     id_post <- mypage$id[which(as.character(mypage$link)%in%url)]
-     
-     post_reactions <- getReactions(id_post, token=fb_oauth)
-     counts <- as.numeric(post_reactions[,-1])
-     nloves <- counts[2];
-     nangries <- counts[6];     
-
-     if(file.exists(reactions_timeseries_filename)){
-        write.table(data.frame(created_time = Sys.time(), loves = nloves, angries = nangries, is = (nloves - nangries)/(nloves+nangries)), file=reactions_timeseries_filename,sep=",",append=TRUE, col.names = FALSE,row.names=FALSE)
-     }else{
-        write.table(data.frame(created_time = Sys.time(), loves = nloves, angries = nangries, is = (nloves - nangries)/(nloves+nangries)), file=reactions_timeseries_filename,sep=",", col.names = TRUE,row.names=FALSE)        
-     }
-     
-     reactions_dataframe <- read.table(reactions_timeseries_filename, sep=",",header=TRUE)
-     
-     timeseries <- reactions_dataframe %>% mutate(
-        day = ymd_hms(created_time) %>%
-           as.Date() %>%
-           format("%d"), 
-        month = ymd_hms(created_time) %>%
-           as.Date() %>%
-           format("%m"), 
-        year = ymd_hms(created_time) %>%
-           as.Date() %>%
-           format("%Y"), 
-        hour = ymd_hms(created_time) %>%
-           format("%H"), 
-        min = ymd_hms(created_time) %>%
-           format("%M")
-     ) %>%
-        group_by(year,month,day,hour,min) %>%
-        summarise(mediais = mean(is))
-     
-     timeseries$hour <- as.numeric(timeseries$hour) - 3
-     timeseries$hour <- as.character(timeseries$hour)
-     
-     dates <- paste(timeseries$day,timeseries$month,timeseries$year,sep="/");
-     times <- paste(timeseries$hour,timeseries$min,sep=":");
-     myx <- paste(dates, times)
-     mydate <- strptime(myx, "%d/%m/%Y %H:%M")
-     myy <- timeseries$mediais
-     
-     ggplot() + geom_line(stat = "identity", aes(x = mydate, y = myy)) + ylab("Índice de Sentimento") + xlab("Tempo")
-     
-  })
-  
   plotReactionsTS = function(){
      url <- input$urlpost
      #     id_pagina <- input$fbid 
@@ -125,7 +63,7 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")     
+     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")  
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -163,6 +101,15 @@ function(input, output, session) {
      
      post_reactions <- getReactions(id_post, token=fb_oauth)
      counts <- as.numeric(post_reactions[,-1])
+     
+     reactions_timeseries_filename <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/reactions_per_time.csv"   
+     nloves <- counts[2]; nangries <- counts[6];     
+     if(file.exists(reactions_timeseries_filename)){
+        write.table(data.frame(created_time = Sys.time(), loves = nloves, angries = nangries, is = (nloves - nangries)/(nloves+nangries)), file=reactions_timeseries_filename,sep=",",append=TRUE, col.names = FALSE,row.names=FALSE)
+     }else{
+        write.table(data.frame(created_time = Sys.time(), loves = nloves, angries = nangries, is = (nloves - nangries)/(nloves+nangries)), file=reactions_timeseries_filename,sep=",", col.names = TRUE,row.names=FALSE)        
+     }
+     
      reactions <- c("Likes","Loves","Haha","Wow","Sad", "Angry")
      percent <- signif(100*(counts/sum(counts)),1)
      ggplot() + 
@@ -173,8 +120,9 @@ function(input, output, session) {
      
   })
 
-  plotSentimentoTS = function(){
-     invalidateLater(1*60*1000)
+  
+  output$sentimentPlot <- renderPlot({
+     invalidateLater(1*20*1000)
      url <- input$urlpost
      #     id_pagina <- input$fbid 
      id_pagina <- getFBID(url)
@@ -182,7 +130,9 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")     
+     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth") 
+     reactions_timeseries_filename <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/reactions_per_time.csv"   
+     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -190,15 +140,87 @@ function(input, output, session) {
      mypage <- getPage(id_pagina, token = fb_oauth, feed=TRUE, since= as.character(data_inicio), until=as.character(data_final))
      id_post <- mypage$id[which(as.character(mypage$link)%in%url)]
      
-     post_reactions <- getReactions(id_post, token=fb_oauth)
-     counts <- as.numeric(post_reactions[,-1])
-     reactions <- c("Likes","Loves","Haha","Wow","Sad", "Angry")
-     percent <- signif(100*(counts/sum(counts)),1)
-     ggplot() + 
-        geom_bar(stat="identity", aes(x=reactions, y = counts)) + 
-        xlab("Reações") + 
-        ylab("Número de Ocorrências") + 
-        coord_flip()     
+     reactions_dataframe <- read.table(reactions_timeseries_filename, sep=",",header=TRUE)
+     
+     timeseries <- reactions_dataframe %>% mutate(
+        day = ymd_hms(created_time) %>%
+           as.Date() %>%
+           format("%d"), 
+        month = ymd_hms(created_time) %>%
+           as.Date() %>%
+           format("%m"), 
+        year = ymd_hms(created_time) %>%
+           as.Date() %>%
+           format("%Y"), 
+        hour = ymd_hms(created_time) %>%
+           format("%H"), 
+        min = ymd_hms(created_time) %>%
+           format("%M")
+     ) %>%
+        group_by(year,month,day,hour,min) %>%
+        summarise(mediais = mean(is))
+     
+     timeseries$hour <- as.numeric(timeseries$hour) - 3
+     timeseries$hour <- as.character(timeseries$hour)
+     
+     dates <- paste(timeseries$day,timeseries$month,timeseries$year,sep="/");
+     times <- paste(timeseries$hour,timeseries$min,sep=":");
+     myx <- paste(dates, times)
+     mydate <- strptime(myx, "%d/%m/%Y %H:%M")
+     myy <- timeseries$mediais
+     
+     ggplot() + geom_line(stat = "identity", aes(x = mydate, y = myy)) + ylab("Índice de Sentimento") + xlab("Tempo")
+     
+  })
+  
+  
+  plotSentimentoTS = function(){
+     url <- input$urlpost
+     #     id_pagina <- input$fbid 
+     id_pagina <- getFBID(url)
+     data <- input$date
+     
+     # command file.path already controls for the OS
+     #     load(paste(workdir,"/fb_oauth",sep=""));
+     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth") 
+     reactions_timeseries_filename <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/reactions_per_time.csv"   
+     
+     data_inicio <- ymd(as.character(data)) + days(-2);
+     data_final <- ymd(as.character(data)) + days(2);
+     
+     mypage <- getPage(id_pagina, token = fb_oauth, feed=TRUE, since= as.character(data_inicio), until=as.character(data_final))
+     id_post <- mypage$id[which(as.character(mypage$link)%in%url)]
+     
+     reactions_dataframe <- read.table(reactions_timeseries_filename, sep=",",header=TRUE)
+     
+     timeseries <- reactions_dataframe %>% mutate(
+        day = ymd_hms(created_time) %>%
+           as.Date() %>%
+           format("%d"), 
+        month = ymd_hms(created_time) %>%
+           as.Date() %>%
+           format("%m"), 
+        year = ymd_hms(created_time) %>%
+           as.Date() %>%
+           format("%Y"), 
+        hour = ymd_hms(created_time) %>%
+           format("%H"), 
+        min = ymd_hms(created_time) %>%
+           format("%M")
+     ) %>%
+        group_by(year,month,day,hour,min) %>%
+        summarise(mediais = mean(is))
+     
+     timeseries$hour <- as.numeric(timeseries$hour) - 3
+     timeseries$hour <- as.character(timeseries$hour)
+     
+     dates <- paste(timeseries$day,timeseries$month,timeseries$year,sep="/");
+     times <- paste(timeseries$hour,timeseries$min,sep=":");
+     myx <- paste(dates, times)
+     mydate <- strptime(myx, "%d/%m/%Y %H:%M")
+     myy <- timeseries$mediais
+     
+     ggplot() + geom_line(stat = "identity", aes(x = mydate, y = myy)) + ylab("Índice de Sentimento") + xlab("Tempo")
   }
   
   
