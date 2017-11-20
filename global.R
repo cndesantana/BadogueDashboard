@@ -21,13 +21,13 @@ library(gdata)
 library(readxl)
 library(htmlwidgets)
 library(httr)
-source("bloomfilter.R")
+#source("bloomfilter.R")
 
 getFBID <- function(fburl){
    return(unlist(strsplit(httr::POST(url='https://findmyfbid.com',body=list(url = fburl), encode="json")$headers$`amp-redirect-to`,'/'))[5])
 }
 
-workdir <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard"
+#workdir <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard"
 
 getIndiceDeSentimentoReactions <- function(reactions){
    reacoes <- toupper(reactions)
@@ -45,7 +45,8 @@ getIndiceDeSentimentoReactions <- function(reactions){
 
 #workdir <- "/srv/shiny-server/cns/BadogueExcel"
 #workdir <- "/home/cdesantana/DataSCOUT/Objectiva/BadogueExcel"
-workdir <- system("cat myworkdir",intern=TRUE)
+workdir <- system("cat ~/auxfiles/myworkdir",intern=TRUE)
+setwd(workdir)
 badwords <- c("scontent.xx.fbcdn.net","https","oh","oe","pra"," v ","como","para","de","do","da","das","dos","isso","esse","nisso","nesse","aquele","nesses","aqueles","aquela","aquelas","que","q","é","sr","governador","rui","costa","senhor")
 
 getTidySentimentos <- function(file){

@@ -62,8 +62,8 @@ function(input, output, session) {
      data <- input$date
      
      # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")  
+     load(paste(workdir,"/fb_oauth",sep=""));
+     #load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")  
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -90,8 +90,8 @@ function(input, output, session) {
      data <- input$date
      
      # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
+     load(paste(workdir,"/fb_oauth",sep=""));
+     #load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -128,7 +128,8 @@ function(input, output, session) {
      id_pagina <- getFBID(url)
      data <- input$date
      
-     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth") 
+     #load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth") 
+     load(paste(workdir,"/fb_oauth",sep=""));
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
      mypage <- getPage(id_pagina, token = fb_oauth, feed=TRUE, since= as.character(data_inicio), until=as.character(data_final))
@@ -183,8 +184,8 @@ function(input, output, session) {
      data <- input$date
      
      # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth") 
+     load(paste(workdir,"/fb_oauth",sep=""));
+     #load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth") 
 
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -239,8 +240,8 @@ function(input, output, session) {
      data <- input$date
      
      # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
+     load(paste(workdir,"/fb_oauth",sep=""));
+     #load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -265,8 +266,8 @@ function(input, output, session) {
      data <- input$date
      
      # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
+     load(paste(workdir,"/fb_oauth",sep=""));
+     #load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -291,8 +292,8 @@ function(input, output, session) {
      data <- input$date
      
      # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
+     load(paste(workdir,"/fb_oauth",sep=""));
+     #load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -300,7 +301,7 @@ function(input, output, session) {
      mypage <- getPage(id_pagina, token = fb_oauth, feed=TRUE, since= as.character(data_inicio), until=as.character(data_final))
      id_post <- mypage$id[which(as.character(mypage$link)%in%url)]
      
-     post_dados <- getPost(id_post, token=fb_oauth, n= 10000)
+     post_dados <- getPost(id_post, token=fb_oauth, n= 1000)
      timeseries <- post_dados$comments %>% mutate(
         day = ymd_hms(created_time) %>%
            as.Date() %>%
@@ -320,7 +321,7 @@ function(input, output, session) {
         summarise(total = n())
     
      timeseries <- timeseries[-c(1:22),];
-     timeseries$hour <- as.numeric(timeseries$hour) - 3
+     timeseries$hour <- as.numeric(timeseries$hour) - 3#por causa da diferença de fuso com relação ao GMT
      timeseries$hour <- as.character(timeseries$hour)
      
      dates <- paste(timeseries$day,timeseries$month,timeseries$year,sep="/");
@@ -340,8 +341,8 @@ function(input, output, session) {
      data <- input$date
      
      # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
+     load(paste(workdir,"/fb_oauth",sep=""));
+     #load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -349,7 +350,7 @@ function(input, output, session) {
      mypage <- getPage(id_pagina, token = fb_oauth, feed=TRUE, since= as.character(data_inicio), until=as.character(data_final))
      id_post <- mypage$id[which(as.character(mypage$link)%in%url)]
      
-     post_dados <- getPost(id_post, token=fb_oauth, n= 10000)
+     post_dados <- getPost(id_post, token=fb_oauth, n= 1000)
      timeseries <- post_dados$comments %>% mutate(
         day = ymd_hms(created_time) %>%
            as.Date() %>%
@@ -367,8 +368,8 @@ function(input, output, session) {
      ) %>%
         group_by(year,month,day,hour,min) %>%
         summarise(total = n())
-     timeseries <- timeseries[-c(1:22),]; 
-     timeseries$hour <- as.numeric(timeseries$hour) - 3
+     timeseries <- timeseries; 
+     timeseries$hour <- as.numeric(timeseries$hour) - 3 #por causa da diferença de fuso com relação ao GMT
      timeseries$hour <- as.character(timeseries$hour)
      
      dates <- paste(timeseries$day,timeseries$month,timeseries$year,sep="/");
