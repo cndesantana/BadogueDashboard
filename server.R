@@ -63,7 +63,7 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")  
+     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")  
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -91,7 +91,7 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")     
+     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -102,14 +102,14 @@ function(input, output, session) {
      post_reactions <- getReactions(id_post, token=fb_oauth)
      counts <- as.numeric(post_reactions[,-1])
      
-     reactions_timeseries_filename <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/reactions_per_time.csv"   
-     nloves <- counts[2]; nangries <- counts[6];     
-     if(file.exists(reactions_timeseries_filename)){
-        write.table(data.frame(created_time = Sys.time(), loves = nloves, angries = nangries, is = (nloves - nangries)/(nloves+nangries)), file=reactions_timeseries_filename,sep=",",append=TRUE, col.names = FALSE,row.names=FALSE)
-     }else{
-        write.table(data.frame(created_time = Sys.time(), loves = nloves, angries = nangries, is = (nloves - nangries)/(nloves+nangries)), file=reactions_timeseries_filename,sep=",", col.names = TRUE,row.names=FALSE)        
-     }
-     
+#     reactions_timeseries_filename <- paste("/home/ubuntu/arquivos_badogue/",id_post,"_reactions_per_time.csv",sep="");   
+#     nloves <- counts[2]; nangries <- counts[6];     
+#     if(file.exists(reactions_timeseries_filename)){
+#        write.table(data.frame(created_time = Sys.time(), loves = nloves, angries = nangries, is = (nloves - nangries)/(nloves+nangries)), file=reactions_timeseries_filename,sep=",",append=TRUE, col.names = FALSE,row.names=FALSE)
+#     }else{
+#        write.table(data.frame(created_time = Sys.time(), loves = nloves, angries = nangries, is = (nloves - nangries)/(nloves+nangries)), file=reactions_timeseries_filename,sep=",", col.names = TRUE,row.names=FALSE)        
+#     }
+#     
      reactions <- c("Likes","Loves","Haha","Wow","Sad", "Angry")
      percent <- signif(100*(counts/sum(counts)),1)
      ggplot() + 
@@ -128,11 +128,12 @@ function(input, output, session) {
      id_pagina <- getFBID(url)
      data <- input$date
      
-     # command file.path already controls for the OS
-     #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth") 
-     reactions_timeseries_filename <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/reactions_per_time.csv"   
-     
+     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth") 
+     data_inicio <- ymd(as.character(data)) + days(-2);
+     data_final <- ymd(as.character(data)) + days(2);
+     mypage <- getPage(id_pagina, token = fb_oauth, feed=TRUE, since= as.character(data_inicio), until=as.character(data_final))
+     id_post <- mypage$id[which(as.character(mypage$link)%in%url)]
+     reactions_timeseries_filename <- paste("/home/ubuntu/arquivos_badogue/",id_post,"_reactions_per_time.csv",sep="");   
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -160,6 +161,7 @@ function(input, output, session) {
         group_by(year,month,day,hour,min) %>%
         summarise(mediais = mean(is))
      
+     timeseries <- timeseries[-c(1:22),]; 
      timeseries$hour <- as.numeric(timeseries$hour) - 3
      timeseries$hour <- as.character(timeseries$hour)
      
@@ -182,9 +184,14 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth") 
-     reactions_timeseries_filename <- "/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/reactions_per_time.csv"   
-     
+     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth") 
+
+     data_inicio <- ymd(as.character(data)) + days(-2);
+     data_final <- ymd(as.character(data)) + days(2);
+     mypage <- getPage(id_pagina, token = fb_oauth, feed=TRUE, since= as.character(data_inicio), until=as.character(data_final))
+     id_post <- mypage$id[which(as.character(mypage$link)%in%url)]
+     reactions_timeseries_filename <- paste("/home/ubuntu/arquivos_badogue/",id_post,"_reactions_per_time.csv",sep="");   
+
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
      
@@ -211,6 +218,7 @@ function(input, output, session) {
         group_by(year,month,day,hour,min) %>%
         summarise(mediais = mean(is))
      
+     timeseries <- timeseries[-c(1:22),]; 
      timeseries$hour <- as.numeric(timeseries$hour) - 3
      timeseries$hour <- as.character(timeseries$hour)
      
@@ -232,7 +240,7 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")     
+     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -258,7 +266,7 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")     
+     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -284,7 +292,7 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")     
+     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -310,7 +318,8 @@ function(input, output, session) {
      ) %>%
         group_by(year,month,day,hour,min) %>%
         summarise(total = n())
-     
+    
+     timeseries <- timeseries[-c(1:22),];
      timeseries$hour <- as.numeric(timeseries$hour) - 3
      timeseries$hour <- as.character(timeseries$hour)
      
@@ -320,7 +329,7 @@ function(input, output, session) {
      mydate <- strptime(myx, "%d/%m/%Y %H:%M")
      myy <- timeseries$total
      
-     ggplot() + geom_line(stat = "identity", aes(x = mydate, y = myy)) + ylab("Audiência") + xlab("Tempo")
+     ggplot() + geom_line(stat = "identity", aes(x = mydate, y = myy)) + ylab("Comentários por minuto") + xlab("Tempo")
    }
   
   output$commentsPlot <- renderPlot({
@@ -332,7 +341,7 @@ function(input, output, session) {
      
      # command file.path already controls for the OS
      #     load(paste(workdir,"/fb_oauth",sep=""));
-     load("/home/cdesantana/DataSCOUT/Objectiva/PapoCorreria/dashboard/fb_oauth")     
+     load("/srv/shiny-server/cns/BadogueDashboard/fb_oauth")     
      
      data_inicio <- ymd(as.character(data)) + days(-2);
      data_final <- ymd(as.character(data)) + days(2);
@@ -358,7 +367,7 @@ function(input, output, session) {
      ) %>%
         group_by(year,month,day,hour,min) %>%
         summarise(total = n())
-     
+     timeseries <- timeseries[-c(1:22),]; 
      timeseries$hour <- as.numeric(timeseries$hour) - 3
      timeseries$hour <- as.character(timeseries$hour)
      
@@ -368,7 +377,7 @@ function(input, output, session) {
      mydate <- strptime(myx, "%d/%m/%Y %H:%M")
      myy <- timeseries$total
      
-     ggplot() + geom_line(stat = "identity", aes(x = mydate, y = myy)) + ylab("Audiência") + xlab("Tempo")
+     ggplot() + geom_line(stat = "identity", aes(x = mydate, y = myy)) + ylab("Comentários por minuto") + xlab("Tempo")
    })
     
   output$packagePlot <- renderBubbles({
@@ -417,7 +426,7 @@ function(input, output, session) {
      },
      content = function(file) {
         device <- function(..., width, height) {
-           grDevices::png(..., width = width, height = height,
+           grDevices::png(..., width = 16, height = 9,
                           res = 300, units = "in")
         }
         ggsave(file, plot = plotComentariosTS(), device = device)
@@ -430,7 +439,7 @@ function(input, output, session) {
      },
      content = function(file) {
         device <- function(..., width, height) {
-           grDevices::png(..., width = width, height = height,
+           grDevices::png(..., width = 16, height = 9,
                           res = 300, units = "in")
         }
         ggsave(file, plot = plotReactionsTS(), device = device)
@@ -443,7 +452,7 @@ function(input, output, session) {
      },
      content = function(file) {
         device <- function(..., width, height) {
-           grDevices::png(..., width = width, height = height,
+           grDevices::png(..., width = 16, height = 9,
                           res = 300, units = "in")
         }
         ggsave(file, plot = plotSentimentoTS(), device = device)

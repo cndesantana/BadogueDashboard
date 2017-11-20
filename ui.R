@@ -49,18 +49,17 @@ dashboardPage(
              plotOutput("commentsPlot", width="100%", height= 600),
              downloadButton("comentariosts","Download")
           ),
-          box(
-             width = 4, status = "info", solidHeader = TRUE,
-             title = "Sentimento",
-             plotOutput("sentimentPlot", width="100%", height= 600),
-             downloadButton("sentimentts","Download")
-          ),
+#          box(
+#             width = 4, status = "info", solidHeader = TRUE,
+#             title = "Sentimento",
+#             plotOutput("sentimentPlot", width="100%", height= 600),
+#             downloadButton("sentimentts","Download")
+#          ),
           box(
              width = 4, status = "info", solidHeader = TRUE,
              title = "Wordcloud",
              plotOutput("wordcloudPlot", width="100%", height= 600),
              downloadButton("wordcloudts","Download")
-             
           )
           
           #,
